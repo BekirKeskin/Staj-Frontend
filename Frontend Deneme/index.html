@@ -1,0 +1,49 @@
+<!DOCTYPE html> <!-- dosya HTML5 kullanıyor demek bu zorunlu-->
+<html> <!-- sayfayı kaplayan ana kutu -->
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <title>İlk Deneme</title> <!-- sayfa ayarlarının olduğu kısım / kullanıcı göremez / css içerir-->
+    
+    </head>
+    <body> <!-- kullanıcının gördüğü her şey -->
+        <header>
+            <h1>HOŞGELDİNİZ</h1>
+            <p id="text">Merhabalar Frontend deneme dünyasına hoşgeldiniz, burada sizinle birlikte Frontend öğreneceğiz.</p>
+            <button id="ThemeToggle">🌙</button>
+        </header>
+        <main>
+            <!-- input/action bölgesi -->
+            <br>
+            <h2>Yapılacaklar</h2>
+
+            <div class="addSection">
+                <form id="taskForm" class="inputRow">
+                    <input id="taskInput" placeholder="Görev yaz">
+                    <button type="submit">Ekle</button>
+                </form>
+                <p id="message"></p>
+            </div>
+
+            <!-- filter bölgesi -->
+            <div class="filterSection">
+                <button id="allBtn" class="filterBtn">Hepsi</button>
+                <button id="activeBtn" class="filterBtn">Aktif</button>
+                <button id="doneBtn" class="filterBtn">Tamamlanan</button>
+            </div>
+    
+            <!-- liste bölgesi -->
+            <div class="container">  
+                <div class="col">
+                    <h3>Aktif</h3>
+                    <ul id="activeList"></ul> <!-- liste oluşturma -->
+                </div>    
+                <div class="col">
+                    <h3>Tamamlanan</h3>
+                    <ul id="doneList"></ul> <!-- liste oluşturma -->
+                </div>
+            </div>
+            <!--<div id="app"></div>--> 
+        </main>
+        <script src="app.js"></script>
+    </body>
+</html>

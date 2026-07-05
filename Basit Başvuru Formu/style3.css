@@ -1,0 +1,21 @@
+label {
+    display: inline-block;
+    width: 90px;
+
+}
+form input{
+    width: 200px;
+    margin: 3px;
+}
+form select{
+    width: 207px;
+}
+form div{
+    margin: 3px;
+}
+form textarea{
+    resize: none;
+    width: 300px;
+    height: 120px;
+    overflow: auto;
+}

@@ -1,0 +1,23 @@
+<h1>ToDo APP Yeniden</h1>
+<!-- HTML BAĞLANTI KURMA -->
+<input [value]="input()" (input)="onInput($event)"/><!-- UI event üretir, $event browserın gönderdiği veri -->
+<!-- [value]="input()" inputu state'ten oku demek, input() çünkü signal fonksiyon gibi çalışır input() -> değeri okur-->
+
+<button (click)="addTodo()">Ekle</button>
+<p>Input: {{ input() }}</p> <!-- Angular UI yi otomatik günceller, State'i ekranda göster demek --> 
+
+<button (click)="changeFilter('all')">Tümü</button>
+
+<button (click)="changeFilter('active')">Aktif</button>
+
+<button (click)="changeFilter('completed')">Tamamlanan</button>
+
+<ul>
+  @for(todo of filteredList(); track todo.id){ <!-- todo of list angular otomatik çizer -->
+    <li>
+      <input type="checkbox" (change)="toggleTodo(todo.id)" [checked]="todo.done">
+      <span [style.textDecoration]="todo.done ? 'line-through' : 'none'">{{ todo.text }}</span>
+      <button (click)="deleteTodo(todo.id)">Sil</button>
+    </li> <!-- şuan todo obje, içinde sadece yazıyı çekmek istediğimiz için .text kullanıyoruz-->
+  }
+</ul>
