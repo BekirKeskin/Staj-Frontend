@@ -1,0 +1,14 @@
+.todos-page{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.filter-section{
+    display: flex;
+    gap: 4px
+}
+.filter-section button{
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 20px;
+}

@@ -1,0 +1,19 @@
+.sidebar{
+    width: 250px;
+    background-color: aqua;
+}
+ul{
+    display:flex;
+    flex-direction: column;
+    list-style: none;
+    padding: 0;
+    gap: 8px;
+}
+li{
+    padding: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+li:hover{
+    transform: translateX(2px);
+}

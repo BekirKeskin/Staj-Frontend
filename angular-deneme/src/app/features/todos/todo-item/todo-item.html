@@ -1,0 +1,12 @@
+<li>
+    <input type="checkbox" (change)="checkClick(todo.id)" [checked]="todo.done">    
+    @if(!isEditing){
+        <span [class.completed]="todo.done">{{ todo.text }}</span>
+        <button (click)="editClick()">Düzenle</button>
+        <button (click)="deleteClick(todo.id)">Sil</button>
+    }
+    @else{
+        <input #editInput [value]="editText" (input)="changeEditText($event)" 
+        (keydown.enter)="saveEdit()" (keydown.escape)="cancelEdit()" (blur)="cancelEdit()">
+    }
+</li>

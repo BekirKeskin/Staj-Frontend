@@ -1,0 +1,14 @@
+.layout{
+    display: flex;
+    flex-direction: column;
+}
+
+.content{
+    display: flex;
+}
+
+.main-content{
+    padding: 8px;
+    flex: 1;
+
+}

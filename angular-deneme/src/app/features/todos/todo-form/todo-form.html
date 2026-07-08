@@ -1,0 +1,5 @@
+<form [formGroup]="todoForm" (ngSubmit)="onSubmit()">
+  <input formControlName="title" placeholder="Todo başlığı">
+  <input formControlName="description" placeholder="Açıklama">
+  <button type="submit">Ekle</button>
+</form>

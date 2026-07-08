@@ -1,0 +1,9 @@
+<ul>
+    @for(todo of todolar; track todo.id){ <!-- todo of list angular otomatik çizer -->
+        <app-todo-item [todo]="todo" (todoChecked)="checkClick($event)" (todoDeleted)="deleteClick($event)"
+            (todoEdited)="editClick($event)">
+        </app-todo-item>
+    }@empty{
+        <p>Henüz görev yok!</p>
+    }
+</ul>

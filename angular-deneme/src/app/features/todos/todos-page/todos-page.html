@@ -1,0 +1,21 @@
+<div class="todos-page">
+  
+  <section class="form-section">
+    <app-todo-form (todoAdded)="addTodo($event)"></app-todo-form>
+  </section>
+
+  <section class="filter-section">
+    <button (click)="changeFilter('all')">Tümü</button>
+
+    <button (click)="changeFilter('active')">Aktif</button>
+
+    <button (click)="changeFilter('completed')">Tamamlanan</button>
+  </section>
+
+  <section>
+    <app-todo-list [todolar]="filteredList()" (checkRequested)="toggleTodo($event.id)"
+      (deleteRequested)="deleteTodo($event.id)" (editRequested)="editTodo($event)">
+    </app-todo-list> 
+  </section>
+
+</div>

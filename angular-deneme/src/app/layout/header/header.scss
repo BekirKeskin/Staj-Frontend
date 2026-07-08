@@ -1,0 +1,13 @@
+.header-container{
+    display: flex;
+    justify-content: space-between;
+}
+.left{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 8px;
+}
+.left h1{
+    margin: 8px;
+}
