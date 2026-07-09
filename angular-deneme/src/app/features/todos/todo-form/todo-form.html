@@ -1,5 +1,55 @@
 <form [formGroup]="todoForm" (ngSubmit)="onSubmit()">
   <input formControlName="title" placeholder="Todo başlığı">
+  <p class="message"> 
+    @if(todoForm.controls.title.invalid && todoForm.controls.title.touched){
+      @if(todoForm.controls.title.errors?.['required']){title required}
+      @if(todoForm.controls.title.errors?.['minlength']){need 3 characthers}
+      @else{}
+    }
+  </p>
+  
   <input formControlName="description" placeholder="Açıklama">
+  <p class="message">
+    @if(todoForm.controls.description.invalid && todoForm.controls.description.touched){
+      @if(todoForm.controls.description.errors?.['required']){description required}
+      @if(todoForm.controls.description.errors?.['minlength']){need 1 characther}
+      @else{}
+    }
+  </p>
+
+  <select formControlName="priority">
+    <option value="">Seçiniz</option>
+    <option value="Low">Low</option>
+    <option value="Medium">Medium</option>
+    <option value="High">High</option>
+  </select>
+  <p class="message">
+    @if(todoForm.controls.priority.invalid && todoForm.controls.priority.touched){
+      @if(todoForm.controls.priority.errors?.['required']){select priority}
+      @else{}
+    }
+  </p>
+
+  <input type="date" formControlName="dueDate">
+  <p class="message">
+    @if(todoForm.controls.dueDate.invalid && todoForm.controls.dueDate.touched){
+      @if(todoForm.controls.dueDate.errors?.['required']){tarih seciniz}
+      @if(todoForm.controls.dueDate.errors?.['pastDate']){geçerli tarih seçiniz}
+    }
+  </p>
+
+  <select formControlName="category">
+    <option value="">Seçiniz</option>
+    @for(category of categories; track category){
+      <option [value]="category">{{category}}</option>
+    }
+  </select>
+  <p class="message">
+    @if(todoForm.controls.category.invalid && todoForm.controls.category.touched){
+      @if(todoForm.controls.category.errors?.['required']){kategori seçiniz}
+      @else{}
+    }
+  </p>
+
   <button type="submit">Ekle</button>
 </form>
