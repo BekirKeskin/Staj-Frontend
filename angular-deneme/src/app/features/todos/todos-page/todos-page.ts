@@ -1,7 +1,7 @@
 import { Component, signal, computed } from '@angular/core';
 import { TodoForm } from '../todo-form/todo-form';
 import { TodoList } from '../todo-list/todo-list';
-import { Todo } from '../models/todo-model';
+import { Todo, TodoFormData } from '../models/todo-model';
 
 @Component({
   selector: 'app-todos-page',
@@ -10,6 +10,7 @@ import { Todo } from '../models/todo-model';
   templateUrl: './todos-page.html',
   styleUrl: './todos-page.scss',
 })
+
 export class TodosPage {
   /* input = signal(''); signal('') inputta reaktif değişken oluşturuyormuş signal olunca angular bunu anlıyormuş
    onInput(event:Event){ // kullanıcı bir şey yazınca onu yakalar her inputta çalışır
@@ -19,11 +20,17 @@ export class TodosPage {
   */
 
   list = signal<Todo[]>([]); // VERİ BURADA, Todo[] = listenin içinde todo objeleri olacak, []=başlangıçta liste yok
+  filter=signal<'all' | 'active' | 'completed'>('all'); // filter STATE
+  editingTodo=signal<Todo| null>(null); // edit STATE
  
-  addTodo(data:{title: string; description:string}){ 
+  addTodo(data: TodoFormData){ 
     const newTodo: Todo ={
       id: Date.now(), 
-      text: data.title,
+      title: data.title,
+      description: data.description,
+      priority: data.priority,
+      dueDate: data.dueDate,
+      category: data.category,
       done: false
     };
     this.list.set([...this.list(), newTodo]);
@@ -33,7 +40,6 @@ export class TodosPage {
     this.filter.set(value);
   }
   
-  filter=signal<'all' | 'active' | 'completed'>('all');
   filteredList = computed(()=>{
 
     if(this.filter() === 'all'){
@@ -67,14 +73,19 @@ export class TodosPage {
     );
   }
 
-  editTodo(editedTodo:Todo){
+  editTodo(todo:Todo){
+    this.editingTodo.set(todo);
+  }
+
+  updateTodo(updatedTodo: Todo){
     this.list.set(
-      this.list().map(todo =>{
-        if(todo.id === editedTodo.id){
-          return editedTodo;
-        }
-        return todo;
-      })
-    );
+    this.list().map(todo => {
+      if (todo.id === updatedTodo.id) {
+        return updatedTodo;
+      }
+      return todo;
+    })
+  );
+  this.editingTodo.set(null);
   }
 }

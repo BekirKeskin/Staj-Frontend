@@ -27,8 +27,8 @@ export class TodoList {
     this.checkRequested.emit(data)
   }
 
-  editClick(data:Todo){
-    this.editRequested.emit(data)
+  editClick(todo:Todo){
+    this.editRequested.emit(todo)
   }
 
   deleteClick(data:{id:number}){

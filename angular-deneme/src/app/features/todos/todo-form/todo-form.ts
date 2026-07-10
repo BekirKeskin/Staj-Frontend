@@ -1,5 +1,6 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Todo, TodoFormData } from '../models/todo-model';
 
 
 @Component({
@@ -10,11 +11,20 @@ import { ReactiveFormsModule, FormControl, FormGroup, Validators, AbstractContro
   styleUrl: './todo-form.scss',
 })
 
-export class TodoForm implements OnInit{
+export class TodoForm implements OnInit, OnChanges{
   categories = ["Work", "Study", "Personal"]
 
+  @Input()
+  editingTodo: Todo | null = null;
+
   @Output()
-  todoAdded = new EventEmitter<{ title: string; description: string }>();
+  todoAdded = new EventEmitter<TodoFormData>();
+
+  @Output()
+  todoEdited = new EventEmitter<Todo>();
+
+  @Output()
+  todoUpdated = new EventEmitter<Todo>();
 
   todoForm = new FormGroup({ // !!!!!!!!!! Reactive forms un başladığı yer !!!!!!!!!!
     title: new FormControl('',[ // form control = tek bir input
@@ -61,9 +71,26 @@ export class TodoForm implements OnInit{
     }
 
     const data = this.todoForm.value; // formdan veriyi alma
+
+    if(this.editingTodo){
+      this.todoUpdated.emit({
+        ...this.editingTodo,
+        title: data.title!,
+        description: data.description ?? '',
+        priority: data.priority!,
+        dueDate: data.dueDate!,
+        category: data.category!
+      });
+      this.todoForm.reset();
+      return;
+    }
+
     this.todoAdded.emit({ // app e gönderiyoz
-      title: data.title!, // != TS boş olabilir uyarısını bastırmak için(title için)
-      description: data.description ?? '' // ?? ''= description boş gelirse sorun çıkmasın
+      title: data.title!, // != TS boş olabilir uyarısını bastırmak içinmiş
+      description: data.description ?? '', // ?? ''= description boş gelirse sorun çıkmasın
+      priority: data.priority!,
+      dueDate: data.dueDate!,
+      category: data.category!,
     });
     this.todoForm.reset();
   }
@@ -71,6 +98,20 @@ export class TodoForm implements OnInit{
   ngOnInit() {
     this.todoForm.valueChanges.subscribe(value => {
       console.log(value);
+    });
+  }
+
+  ngOnChanges() {
+    if(!this.editingTodo){
+      return;
+    }
+
+    this.todoForm.patchValue({
+      title: this.editingTodo.title,
+      description: this.editingTodo.description,
+      priority: this.editingTodo.priority,
+      dueDate: this.editingTodo.dueDate,
+      category: this.editingTodo.category
     });
   }
 

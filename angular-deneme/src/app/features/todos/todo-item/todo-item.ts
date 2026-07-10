@@ -9,7 +9,7 @@ import { Todo } from '../models/todo-model';
   styleUrl: './todo-item.scss',
 })
 export class TodoItem {
-  @ViewChild('editInput') //HTML de vereceğimiz referans adı
+  
   editInput!: ElementRef<HTMLInputElement>;
 
   @Input()
@@ -22,35 +22,15 @@ export class TodoItem {
   todoChecked = new EventEmitter<{id: number}>();
 
   @Output()
-  todoEdited = new EventEmitter<Todo>();
+  editRequested = new EventEmitter<Todo>();
 
-  isEditing = false;
-  editText = '';
   
   checkClick(id:number){
     this.todoChecked.emit({id});
   }
 
   editClick(){
-    this.isEditing = true;
-    this.editText = this.todo.text;
-
-    setTimeout(()=>{
-      this.editInput.nativeElement.focus();
-    });
-  }
-  saveEdit(){
-    this.todoEdited.emit({...this.todo, text:this.editText});
-    this.isEditing = false;
-  }
-  cancelEdit(){
-    this.isEditing = false;
-    this.editText = '';
-  }
-
-  changeEditText(event: Event){
-    const value = (event.target as HTMLInputElement).value;
-    this.editText = value;
+    this.editRequested.emit(this.todo);
   }
 
   deleteClick(id:number){
