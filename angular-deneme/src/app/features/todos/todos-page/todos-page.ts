@@ -1,7 +1,8 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { TodoForm } from '../todo-form/todo-form';
 import { TodoList } from '../todo-list/todo-list';
 import { Todo, TodoFormData } from '../models/todo-model';
+import { TodoService } from '../services/todo';
 
 @Component({
   selector: 'app-todos-page',
@@ -18,74 +19,29 @@ export class TodosPage {
     this.input.set(value); // TS State değiştirir neden input.set() -> değeri değiştirir
   }
   */
-
-  list = signal<Todo[]>([]); // VERİ BURADA, Todo[] = listenin içinde todo objeleri olacak, []=başlangıçta liste yok
-  filter=signal<'all' | 'active' | 'completed'>('all'); // filter STATE
-  editingTodo=signal<Todo| null>(null); // edit STATE
+  todoService = inject(TodoService);
  
   addTodo(data: TodoFormData){ 
-    const newTodo: Todo ={
-      id: Date.now(), 
-      title: data.title,
-      description: data.description,
-      priority: data.priority,
-      dueDate: data.dueDate,
-      category: data.category,
-      done: false
-    };
-    this.list.set([...this.list(), newTodo]);
+    this.todoService.addTodo(data);
   }
 
   changeFilter(value: 'all' | 'active' | 'completed') {
-    this.filter.set(value);
-  }
-  
-  filteredList = computed(()=>{
-
-    if(this.filter() === 'all'){
-      return this.list(); // this.list() = gerçek liste    this.list = signal
-    }
-
-    if(this.filter() === 'active'){
-      return this.list().filter(todo => todo.done === false);
-    }
-
-    if(this.filter() === 'completed'){
-      return this.list().filter(todo => todo.done === true);
-    }
-    return this.list();
-  });
-
-  deleteTodo(id:number){
-    this.list.set(
-      this.list().filter(todo => todo.id !== id)
-    );
+    this.todoService.changeFilter(value);
   }
 
   toggleTodo(id:number){
-    this.list.set(
-      this.list().map(todo =>{
-        if(todo.id === id){
-          return {...todo, done: !todo.done};
-        }
-        return todo;
-      })
-    );
+    this.todoService.toggleTodo(id);
   }
 
-  editTodo(todo:Todo){
-    this.editingTodo.set(todo);
+  deleteTodo(id:number){
+    this.todoService.deleteTodo(id);
+  }
+
+  editTodo(todo:Todo){ 
+    this.todoService.editTodo(todo);
   }
 
   updateTodo(updatedTodo: Todo){
-    this.list.set(
-    this.list().map(todo => {
-      if (todo.id === updatedTodo.id) {
-        return updatedTodo;
-      }
-      return todo;
-    })
-  );
-  this.editingTodo.set(null);
+    this.todoService.updateTodo(updatedTodo);
   }
 }

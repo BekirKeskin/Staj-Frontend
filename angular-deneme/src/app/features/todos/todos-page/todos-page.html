@@ -1,12 +1,13 @@
 <div class="todos-page">
   
   <section class="form-section">
-    <app-todo-form [editingTodo]="editingTodo()" (todoAdded)="addTodo($event)" (todoUpdated)="updateTodo($event)" >
+    <app-todo-form [editingTodo]="todoService.editingTodo()" (todoAdded)="addTodo($event)" (todoUpdated)="updateTodo($event)" >
       
     </app-todo-form>
   </section>
 
   <section class="filter-section">
+    <button (click)="todoService.test()">Service test</button>
     <button (click)="changeFilter('all')">Tümü</button>
 
     <button (click)="changeFilter('active')">Aktif</button>
@@ -15,7 +16,7 @@
   </section>
 
   <section>
-    <app-todo-list [todolar]="filteredList()" (checkRequested)="toggleTodo($event.id)"
+    <app-todo-list [todolar]="todoService.filteredList()" (checkRequested)="toggleTodo($event.id)"
       (deleteRequested)="deleteTodo($event.id)" (editRequested)="editTodo($event)">
     </app-todo-list> 
   </section>
