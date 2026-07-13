@@ -1,4 +1,4 @@
-import { Service, signal, computed, inject } from '@angular/core';
+import { Service, signal, computed, inject, effect } from '@angular/core';
 import { Todo, TodoFormData } from '../models/todo-model';
 import { LocalStorageService } from './local-storage';
 import { __values } from 'tslib';
@@ -18,10 +18,15 @@ export class TodoService {
 
     constructor(){
         const todos = this.localStorageService.load("todos");
-        if(!todos){
-           return;
+
+        if(todos){
+           this._list.set(todos as Todo[]); // type guard şimdilik kullanmadık
         }
-        this._list.set(todos as Todo[]); // type guard şimdilik kullanmadık
+
+        effect(()=> { // save kısmını tek tek yazmayıp buraya tek bir yere yazdım
+            const todos = this._list();
+            this.localStorageService.save("todos", todos);
+        });
     }
 
     saveTodos():void{
@@ -39,7 +44,6 @@ export class TodoService {
             done: false
         };
         this._list.set([...this._list(), newTodo]);
-        this.saveTodos();
     }
 
     changeFilter(value: 'all' | 'active' | 'completed') {
@@ -71,14 +75,12 @@ export class TodoService {
                 return todo;
             })
         );
-        this.saveTodos();
     }
 
     deleteTodo(id: number){
         this._list.set(
             this._list().filter(todo => todo.id !== id)
         );
-        this.saveTodos();
     }
 
     editTodo(todo:Todo){ 
@@ -94,7 +96,6 @@ export class TodoService {
                 return todo;
             })
         );
-        this.saveTodos();
         this._editingTodo.set(null);
     }
 }
