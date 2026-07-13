@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Header } from '../header/header'
 import { Sidebar } from '../sidebar/sidebar';
-import { TodosPage } from '../../features/todos/todos-page/todos-page';
+import { RouterOutlet } from '@angular/router';
 
 
 @Component({
@@ -9,6 +9,6 @@ import { TodosPage } from '../../features/todos/todos-page/todos-page';
   standalone: true,
   templateUrl: './layout.html',
   styleUrl: './layout.scss',
-  imports: [Header, Sidebar, TodosPage]
+  imports: [Header, Sidebar, RouterOutlet]
 })
 export class Layout {}

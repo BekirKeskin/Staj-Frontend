@@ -17,3 +17,9 @@ li{
 li:hover{
     transform: translateX(2px);
 }
+li.active{
+    font-weight: bold;
+}
+a{
+    text-decoration: none;
+}
