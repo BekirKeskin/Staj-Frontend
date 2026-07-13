@@ -1,16 +1,31 @@
-import { Service, signal, computed } from '@angular/core';
+import { Service, signal, computed, inject } from '@angular/core';
 import { Todo, TodoFormData } from '../models/todo-model';
+import { LocalStorageService } from './local-storage';
+import { __values } from 'tslib';
 
 @Service() // yeni kullanım normalde @Injection({provideIn: 'root'})
 export class TodoService {
 
-    list = signal<Todo[]>([]); // VERİ BURADA, Todo[] = listenin içinde todo objeleri olacak, []=başlangıçta liste yok
-    filter=signal<'all' | 'active' | 'completed'>('all'); // filter STATE
-    editingTodo=signal<Todo| null>(null); // edit STATE
+    localStorageService = inject(LocalStorageService)
 
-    test(){
-        console.log("CONSOLE ÇALIŞTI");
-        return;
+    private _list = signal<Todo[]>([]); // VERİ BURADA, Todo[] = listenin içinde todo objeleri olacak, []=başlangıçta liste yok
+    private _filter = signal<'all' | 'active' | 'completed'>('all'); // _filter STATE
+    private _editingTodo = signal<Todo| null>(null); // edit STATE
+
+    readonly list = this._list.asReadonly();
+    readonly filter = this._filter.asReadonly();
+    readonly editingTodo = this._editingTodo.asReadonly();
+
+    constructor(){
+        const todos = this.localStorageService.load("todos");
+        if(!todos){
+           return;
+        }
+        this._list.set(todos as Todo[]); // type guard şimdilik kullanmadık
+    }
+
+    saveTodos():void{
+        this.localStorageService.save("todos",this._list());
     }
 
     addTodo(data: TodoFormData){
@@ -23,60 +38,63 @@ export class TodoService {
             dueDate: data.dueDate!,
             done: false
         };
-        this.list.set([...this.list(), newTodo]);
+        this._list.set([...this._list(), newTodo]);
+        this.saveTodos();
     }
 
     changeFilter(value: 'all' | 'active' | 'completed') {
-        this.filter.set(value);
+        this._filter.set(value);
     }
 
     filteredList = computed(()=>{
 
-        if(this.filter() === 'all'){
-            return this.list(); // this.list() = gerçek liste    this.list = signal
+        if(this._filter() === 'all'){
+            return this._list(); // this._list() = gerçek liste    this._list = signal
         }
 
-        if(this.filter() === 'active'){
-            return this.list().filter(todo => todo.done === false);
+        if(this._filter() === 'active'){
+            return this._list().filter(todo => todo.done === false);
         }
 
-        if(this.filter() === 'completed'){
-            return this.list().filter(todo => todo.done === true);
+        if(this._filter() === 'completed'){
+            return this._list().filter(todo => todo.done === true);
         }
-        return this.list();
+        return this._list();
     });
     
-
     toggleTodo(id:number){
-        this.list.set(
-            this.list().map(todo =>{
+        this._list.set(
+            this._list().map(todo =>{
                 if(todo.id === id){
                     return {...todo, done: !todo.done};
                 }
                 return todo;
             })
         );
+        this.saveTodos();
     }
 
     deleteTodo(id: number){
-        this.list.set(
-            this.list().filter(todo => todo.id !== id)
+        this._list.set(
+            this._list().filter(todo => todo.id !== id)
         );
+        this.saveTodos();
     }
 
     editTodo(todo:Todo){ 
-        this.editingTodo.set(todo);
+        this._editingTodo.set(todo);
     }
 
     updateTodo(updatedTodo: Todo){
-        this.list.set(
-            this.list().map(todo => {
+        this._list.set(
+            this._list().map(todo => {
                 if (todo.id === updatedTodo.id) {
                     return updatedTodo;
                 }
                 return todo;
             })
         );
-        this.editingTodo.set(null);
+        this.saveTodos();
+        this._editingTodo.set(null);
     }
 }
