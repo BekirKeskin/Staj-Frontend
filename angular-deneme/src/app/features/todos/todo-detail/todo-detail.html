@@ -1,0 +1,11 @@
+<h1>TODO DETAIL</h1>
+
+@if (todo) {
+  <h2>{{ todo.title }}</h2>
+  <p>{{ todo.description }}</p>
+  <p>{{ todo.priority }}</p>
+  <p>{{ todo.category }}</p>
+  <p>{{ todo.dueDate }}</p>
+} @else {
+  <p>Todo bulunamadı.</p>
+}

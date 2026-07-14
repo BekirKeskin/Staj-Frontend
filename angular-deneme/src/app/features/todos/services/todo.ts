@@ -33,6 +33,11 @@ export class TodoService {
         this.localStorageService.save("todos",this._list());
     }
 
+    getTodoById(id:number): Todo|undefined{
+        return this._list().find((todo) => todo.id===id);
+        
+    }
+
     addTodo(data: TodoFormData){
         const newTodo: Todo={
             id: Date.now(),

@@ -3,6 +3,7 @@ import { TodoForm } from '../todo-form/todo-form';
 import { TodoList } from '../todo-list/todo-list';
 import { Todo, TodoFormData } from '../models/todo-model';
 import { TodoService } from '../services/todo';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-todos-page',
@@ -20,6 +21,23 @@ export class TodosPage {
   }
   */
   todoService = inject(TodoService);
+  private activatedRoute = inject(ActivatedRoute);
+
+  ngOnInit(){
+    this.activatedRoute.queryParams.subscribe((queryParams) => {
+      console.log(queryParams);
+
+      const status = queryParams["status"];
+      
+      if (
+        status === "all" ||
+        status === "active" ||
+        status === "completed"
+      ) {
+          this.todoService.changeFilter(status);
+        }
+    });
+  }
  
   addTodo(data: TodoFormData){ 
     this.todoService.addTodo(data);
