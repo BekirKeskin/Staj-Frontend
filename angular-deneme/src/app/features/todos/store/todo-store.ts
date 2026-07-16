@@ -50,16 +50,19 @@ export class TodoStore {
     });
 
     // ACTIONS
-
+    
+    // lookup actions
     getTodoById(id:number): Todo|undefined{
         return this._list().find((todo) => todo.id===id);
     }
 
+    // state actions
     setTodos(todos: Todo[]){
         this._list.set(todos);
     }
 
-    addTodoFormApi(todo:Todo){
+    // CRUD actions
+    addTodoFromApi(todo:Todo){
         this._list.set([...this._list(),todo]);
     }
 
@@ -76,8 +79,16 @@ export class TodoStore {
         this._list.set([...this._list(), newTodo]);
     }
 
-    changeFilter(value: 'all' | 'active' | 'completed') {
-        this._filter.set(value);
+    updateTodo(updatedTodo: Todo){
+        this._list.set(
+            this._list().map(todo => {
+                if (todo.id === updatedTodo.id) {
+                    return updatedTodo;
+                }
+                return todo;
+            })
+        );
+        this._editingTodo.set(null);
     }
 
     toggleTodo(id:number){
@@ -91,25 +102,19 @@ export class TodoStore {
         );
     }
 
-    editTodo(todo:Todo){ 
-        this._editingTodo.set(todo);
-    }
-
-    updateTodo(updatedTodo: Todo){
-        this._list.set(
-            this._list().map(todo => {
-                if (todo.id === updatedTodo.id) {
-                    return updatedTodo;
-                }
-                return todo;
-            })
-        );
-        this._editingTodo.set(null);
-    }
-
     deleteTodo(id: number){
         this._list.set(
             this._list().filter(todo => todo.id !== id)
         );
     }
+
+    // UI actions
+    changeFilter(value: 'all' | 'active' | 'completed') {
+        this._filter.set(value);
+    }
+
+    editTodo(todo:Todo){ 
+        this._editingTodo.set(todo);
+    }
+
 }

@@ -1,4 +1,3 @@
-import { identifierName } from '@angular/compiler';
 import { Service } from '@angular/core';
 
 @Service()
@@ -18,7 +17,7 @@ export class LocalStorageService {
         const result = JSON.parse(data);
         return result;
         }catch(error){
-            return null;
+            return null
         }
     }
 
