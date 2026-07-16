@@ -37,6 +37,7 @@ export class TodosPage {
           this.todoService.changeFilter(status);
         }
     });
+    this.todoService.getTodos();
   }
  
   addTodo(data: TodoFormData){ 

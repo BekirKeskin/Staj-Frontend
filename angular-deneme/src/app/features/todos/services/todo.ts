@@ -2,11 +2,14 @@ import { Service, signal, computed, inject, effect } from '@angular/core';
 import { Todo, TodoFormData } from '../models/todo-model';
 import { LocalStorageService } from './local-storage';
 import { __values } from 'tslib';
+import { HttpClient } from '@angular/common/http';
+import { TodoForm } from '../todo-form/todo-form';
 
 @Service() // yeni kullanım normalde @Injection({provideIn: 'root'})
 export class TodoService {
 
     localStorageService = inject(LocalStorageService)
+    private httpClient = inject(HttpClient)
 
     private _list = signal<Todo[]>([]); // VERİ BURADA, Todo[] = listenin içinde todo objeleri olacak, []=başlangıçta liste yok
     private _filter = signal<'all' | 'active' | 'completed'>('all'); // _filter STATE
@@ -31,6 +34,23 @@ export class TodoService {
 
     saveTodos():void{
         this.localStorageService.save("todos",this._list());
+    }
+
+    getTodos(){
+        this.httpClient.get<Todo[]>("http://localhost:3000/todos")
+        .subscribe((todos)=>{
+            this._list.set(todos);
+        });
+    }
+
+    postTodos(data: TodoFormData){
+        this.httpClient.post<Todo>("http://localhost:3000/todos",data)
+        .subscribe((todo)=>{
+            this._list.set([
+                ...this._list(),
+                todo
+            ]);
+        });
     }
 
     getTodoById(id:number): Todo|undefined{
