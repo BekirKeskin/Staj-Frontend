@@ -3,9 +3,9 @@ import { Todo, TodoFormData } from '../models/todo-model';
 import { LocalStorageService } from './local-storage';
 import { __values } from 'tslib';
 import { HttpClient } from '@angular/common/http';
-import { catchError, finalize, map, throwError } from 'rxjs';
+import { catchError, finalize, map, of, throwError } from 'rxjs';
 
-@Service() // yeni kullanım normalde @Injection({provideIn: 'root'})
+@Service() // yeni kullanım normalde @Injection({provideIn: 'root'}}
 export class TodoService {
 
     localStorageService = inject(LocalStorageService)
@@ -44,12 +44,11 @@ export class TodoService {
         this._loading.set(true);
         this.httpClient.get<Todo[]>("http://localhost:3000/todos")
 
-        .pipe(
+        .pipe( // THROW ERROR sadece öğrenme amaçlı eklendi kalkacak
             map((todos)=>{return todos;}), // kısa hali map((todos)=> todos) bir de verilerimiz zaten dönüştürülerek geliyor o nedenle map in projede yeri olmayacak
             catchError((error)=>{
-                this._error.set(true);
-                console.log(error);
-                return throwError(()=>error);
+                const todos = this.localStorageService.load("todos") as Todo[] ?? []; // as Todo[] yu storage.service de ki load metodundaki unknown dan dolayı ekliyoruz ki beklediği değeri döndürsün, Observable döndürmemiz gerektiği için ?? [] ekliyoruz eğer null dönerse boş dizi kullan demek 
+                return of(todos); // buradaki todos localStorage dan gelen, API den gelen değil
             }),
             finalize(()=>{
                 this._loading.set(false);
@@ -83,6 +82,7 @@ export class TodoService {
                 ...this._list(),
                 todo
             ]);
+            this.localStorageService.save("todos",this._list());
             this._error.set(false);
         });
     }
@@ -108,6 +108,7 @@ export class TodoService {
                     return item.id === todo.id ? todo:item; //? eşitse değilse olayı yani uzun kodun kısaltması
                 })
             );
+            this.localStorageService.save("todos",this._list());
             this._error.set(false);
         })
     }
@@ -130,6 +131,7 @@ export class TodoService {
             this._list.set(
                 this._list().filter(todo => todo.id !==id)
             )
+            this.localStorageService.save("todos",this._list());
             this._error.set(false);
         })
     }
