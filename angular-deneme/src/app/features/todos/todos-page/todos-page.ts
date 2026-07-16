@@ -4,6 +4,7 @@ import { TodoList } from '../todo-list/todo-list';
 import { Todo, TodoFormData } from '../models/todo-model';
 import { TodoService } from '../services/todo';
 import { ActivatedRoute } from '@angular/router';
+import { TodoStore } from '../store/todo-store';
 
 @Component({
   selector: 'app-todos-page',
@@ -20,7 +21,8 @@ export class TodosPage {
     this.input.set(value); // TS State değiştirir neden input.set() -> değeri değiştirir
   }
   */
-  todoService = inject(TodoService);
+  todoStore = inject(TodoStore);
+  private todoService = inject(TodoService);
   private activatedRoute = inject(ActivatedRoute);
 
   ngOnInit(){
@@ -34,33 +36,33 @@ export class TodosPage {
         status === "active" ||
         status === "completed"
       ) {
-          this.todoService.changeFilter(status);
+          this.todoStore.changeFilter(status);
         }
     });
     this.todoService.getTodos();
   }
  
   addTodo(data: TodoFormData){ 
-    this.todoService.addTodo(data);
+    this.todoStore.addTodo(data);
   }
 
   changeFilter(value: 'all' | 'active' | 'completed') {
-    this.todoService.changeFilter(value);
+    this.todoStore.changeFilter(value);
   }
 
   toggleTodo(id:number){
-    this.todoService.toggleTodo(id);
+    this.todoStore.toggleTodo(id);
   }
 
   deleteTodo(id:number){
-    this.todoService.deleteTodo(id);
+    this.todoStore.deleteTodo(id);
   }
 
   editTodo(todo:Todo){ 
-    this.todoService.editTodo(todo);
+    this.todoStore.editTodo(todo);
   }
 
   updateTodo(updatedTodo: Todo){
-    this.todoService.updateTodo(updatedTodo);
+    this.todoStore.updateTodo(updatedTodo);
   }
 }

@@ -1,44 +1,26 @@
-import { Service, signal, computed, inject, effect } from '@angular/core';
+import { Service, signal, inject} from '@angular/core';
 import { Todo, TodoFormData } from '../models/todo-model';
 import { LocalStorageService } from './local-storage';
-import { __values } from 'tslib';
 import { HttpClient } from '@angular/common/http';
-import { catchError, finalize, map, of, throwError } from 'rxjs';
+import { catchError, finalize, map, of, throwError, retry } from 'rxjs';
+import { TodoStore } from '../store/todo-store';
 
 @Service() // yeni kullanım normalde @Injection({provideIn: 'root'}}
 export class TodoService {
-
+    
     localStorageService = inject(LocalStorageService)
-    private httpClient = inject(HttpClient)
+    private todoStore = inject(TodoStore);
+    private httpClient = inject(HttpClient);
 
-    private _list = signal<Todo[]>([]); // VERİ BURADA, Todo[] = listenin içinde todo objeleri olacak, []=başlangıçta liste yok
-    private _filter = signal<'all' | 'active' | 'completed'>('all'); // _filter STATE
-    private _editingTodo = signal<Todo| null>(null); // edit STATE
+    // STATELER
+
     private _loading = signal(false);
-    private _error = signal(false);
+    private _error = signal<string | null>(null); // değiştirildi çünkü ileride hata mesajı da kullanılabilir diye sadece true false döndürüyordu içi false olunca
 
-    readonly list = this._list.asReadonly();
-    readonly filter = this._filter.asReadonly();
-    readonly editingTodo = this._editingTodo.asReadonly();
     readonly loading = this._loading.asReadonly();
     readonly error = this._error.asReadonly();
 
-    constructor(){
-        const todos = this.localStorageService.load("todos");
-
-        if(todos){
-           this._list.set(todos as Todo[]); // type guard şimdilik kullanmadık
-        }
-
-        effect(()=> { // save kısmını tek tek yazmayıp buraya tek bir yere yazdım
-            const todos = this._list();
-            this.localStorageService.save("todos", todos);
-        });
-    }
-
-    saveTodos():void{
-        this.localStorageService.save("todos",this._list());
-    }
+    // ACTIONS
 
     getTodos(){
         this._loading.set(true);
@@ -46,6 +28,7 @@ export class TodoService {
 
         .pipe( // THROW ERROR sadece öğrenme amaçlı eklendi kalkacak
             map((todos)=>{return todos;}), // kısa hali map((todos)=> todos) bir de verilerimiz zaten dönüştürülerek geliyor o nedenle map in projede yeri olmayacak
+            retry(1),
             catchError((error)=>{
                 const todos = this.localStorageService.load("todos") as Todo[] ?? []; // as Todo[] yu storage.service de ki load metodundaki unknown dan dolayı ekliyoruz ki beklediği değeri döndürsün, Observable döndürmemiz gerektiği için ?? [] ekliyoruz eğer null dönerse boş dizi kullan demek 
                 return of(todos); // buradaki todos localStorage dan gelen, API den gelen değil
@@ -56,8 +39,8 @@ export class TodoService {
         )
 
         .subscribe((todos)=>{
-            this._list.set(todos);
-            this._error.set(false);
+            this.todoStore.setTodos(todos);
+            this._error.set(null);
         });
     }
 
@@ -68,7 +51,7 @@ export class TodoService {
         .pipe(
             map((todo)=>{return todo;}),
             catchError((error)=>{
-                this._error.set(true);
+                this._error.set("hata mesajı");
                 console.log(error);
                 return throwError(()=>error);
             }),
@@ -76,25 +59,20 @@ export class TodoService {
                 this._loading.set(false);
             })
         )
-
         .subscribe((todo)=>{
-            this._list.set([
-                ...this._list(),
-                todo
-            ]);
-            this.localStorageService.save("todos",this._list());
-            this._error.set(false);
+            this.todoStore.addTodoFormApi(todo);
+            this._error.set(null);
         });
     }
 
     patchTodos(todo: Todo){
         this._loading.set(true);
-        this.httpClient.patch<Todo>("http://localhost:3000/todos/id",todo)
+        this.httpClient.patch<Todo>(`http://localhost:3000/todos/${todo.id}`,todo)
 
         .pipe(
             map((todo)=>{return todo;}),
             catchError((error)=>{
-                this._error.set(true);
+                this._error.set("hata mesajı");
                 console.log(error)
                 return throwError(()=>error);
             }),
@@ -103,14 +81,29 @@ export class TodoService {
             })
         )
         .subscribe((todo)=>{
-            this._list.set(
-                this._list().map((item)=>{
-                    return item.id === todo.id ? todo:item; //? eşitse değilse olayı yani uzun kodun kısaltması
-                })
-            );
-            this.localStorageService.save("todos",this._list());
-            this._error.set(false);
+            this.todoStore.updateTodo(todo);
+            this._error.set(null);
         })
+    }
+
+    putTodos(todo: Todo){
+        this._loading.set(true);
+        this.httpClient.put<Todo>(`http://localhost:3000/todos/${todo.id}`,todo)
+        
+        .pipe(
+            catchError((error)=>{
+                this._error.set("hata mesajı");
+                console.log(error);
+                return throwError(()=>error);
+            }),
+            finalize(()=>{
+                this._loading.set(false);
+            })
+        )
+        .subscribe((todo)=>{
+            this.todoStore.updateTodo(todo);
+            this._error.set(null);
+        });
     }
 
     deleteTodos(id: number){
@@ -119,7 +112,7 @@ export class TodoService {
 
         .pipe(
             catchError((error)=>{
-                this._error.set(true);
+                this._error.set("hata mesajı");
                 console.log(error);
                 return throwError(()=>error);
             }),
@@ -128,82 +121,9 @@ export class TodoService {
             })
         )
         .subscribe(()=>{
-            this._list.set(
-                this._list().filter(todo => todo.id !==id)
-            )
-            this.localStorageService.save("todos",this._list());
-            this._error.set(false);
+            this.todoStore.deleteTodo(id);
+            this._error.set(null);
         })
     }
 
-    getTodoById(id:number): Todo|undefined{
-        return this._list().find((todo) => todo.id===id);
-        
-    }
-
-    addTodo(data: TodoFormData){
-        const newTodo: Todo={
-            id: Date.now(),
-            title: data.title!,
-            description: data.description ?? '',
-            priority: data.priority!,
-            category: data.category!,
-            dueDate: data.dueDate!,
-            done: false
-        };
-        this._list.set([...this._list(), newTodo]);
-    }
-
-    changeFilter(value: 'all' | 'active' | 'completed') {
-        this._filter.set(value);
-    }
-
-    filteredList = computed(()=>{
-
-        if(this._filter() === 'all'){
-            return this._list(); // this._list() = gerçek liste    this._list = signal
-        }
-
-        if(this._filter() === 'active'){
-            return this._list().filter(todo => todo.done === false);
-        }
-
-        if(this._filter() === 'completed'){
-            return this._list().filter(todo => todo.done === true);
-        }
-        return this._list();
-    });
-    
-    toggleTodo(id:number){
-        this._list.set(
-            this._list().map(todo =>{
-                if(todo.id === id){
-                    return {...todo, done: !todo.done};
-                }
-                return todo;
-            })
-        );
-    }
-
-    deleteTodo(id: number){
-        this._list.set(
-            this._list().filter(todo => todo.id !== id)
-        );
-    }
-
-    editTodo(todo:Todo){ 
-        this._editingTodo.set(todo);
-    }
-
-    updateTodo(updatedTodo: Todo){
-        this._list.set(
-            this._list().map(todo => {
-                if (todo.id === updatedTodo.id) {
-                    return updatedTodo;
-                }
-                return todo;
-            })
-        );
-        this._editingTodo.set(null);
-    }
 }

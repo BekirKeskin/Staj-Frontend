@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TodoService } from '../services/todo';
 import { Todo } from '../models/todo-model';
+import { TodoStore } from '../store/todo-store';
 
 @Component({
   selector: 'app-todo-detail',
@@ -13,7 +13,7 @@ import { Todo } from '../models/todo-model';
 export class TodoDetail {
   
   private activatedRoute = inject(ActivatedRoute);
-  private todoService = inject(TodoService);
+  private todoStore = inject(TodoStore);
 
   todo: Todo | undefined;
 
@@ -23,9 +23,9 @@ export class TodoDetail {
       const id = Number(params["id"]);
 
       console.log("URL id:", id);
-      console.log("Liste:", this.todoService.list());
+      console.log("Liste:", this.todoStore.list());
 
-      this.todo = this.todoService.getTodoById(id);
+      this.todo = this.todoStore.getTodoById(id);
       console.log("Bulunan:", this.todo);
     });
   }
