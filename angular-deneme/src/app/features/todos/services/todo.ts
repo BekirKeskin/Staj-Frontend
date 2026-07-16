@@ -30,7 +30,7 @@ export class TodoService {
             map((todos)=>{return todos;}), // kısa hali map((todos)=> todos) bir de verilerimiz zaten dönüştürülerek geliyor o nedenle map in projede yeri olmayacak
             retry(1),
             catchError((error)=>{
-                const todos = this.localStorageService.load("todos") as Todo[] ?? []; // as Todo[] yu storage.service de ki load metodundaki unknown dan dolayı ekliyoruz ki beklediği değeri döndürsün, Observable döndürmemiz gerektiği için ?? [] ekliyoruz eğer null dönerse boş dizi kullan demek 
+                const todos = this.localStorageService.load<Todo[]>("todos") ?? []; // as Todo[] yu storage.service de ki load metodundaki unknown dan dolayı ekliyoruz ki beklediği değeri döndürsün, Observable döndürmemiz gerektiği için ?? [] ekliyoruz eğer null dönerse boş dizi kullan demek 
                 return of(todos); // buradaki todos localStorage dan gelen, API den gelen değil
             }),
             finalize(()=>{
@@ -60,7 +60,7 @@ export class TodoService {
             })
         )
         .subscribe((todo)=>{
-            this.todoStore.addTodoFormApi(todo);
+            this.todoStore.addTodoFromApi(todo);
             this._error.set(null);
         });
     }

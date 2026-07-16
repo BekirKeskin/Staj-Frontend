@@ -8,14 +8,14 @@ export class LocalStorageService {
         localStorage.setItem(key,data); // kaydetme 
     }
     
-    load(key: string): unknown | null{
+    load<T>(key: string): T | null{ // T = type mış aslına istediğimiz şey olabilir sadece belli olan bir kısaltmaymış
         const data = localStorage.getItem(key);
         if (!data){
             return null;
         }
         try{
         const result = JSON.parse(data);
-        return result;
+        return result; // as T de eklenebilir belirtme amaçlı
         }catch(error){
             return null
         }

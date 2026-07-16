@@ -19,10 +19,10 @@ export class TodoStore {
 
 
     constructor(){
-        const todos = this.localStorageService.load("todos");
+        const todos = this.localStorageService.load<Todo[]>("todos");
 
         if(todos){
-           this._list.set(todos as Todo[]); // type guard şimdilik kullanmadık
+           this._list.set(todos); // type guard şimdilik kullanmadık
         }
 
         effect(()=> { // save kısmını tek tek yazmayıp buraya tek bir yere yazdım
@@ -51,7 +51,7 @@ export class TodoStore {
 
     // ACTIONS
     
-    // lookup actions
+    // query actions
     getTodoById(id:number): Todo|undefined{
         return this._list().find((todo) => todo.id===id);
     }
