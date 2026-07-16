@@ -3,7 +3,7 @@ import { Todo, TodoFormData } from '../models/todo-model';
 import { LocalStorageService } from './local-storage';
 import { __values } from 'tslib';
 import { HttpClient } from '@angular/common/http';
-import { TodoForm } from '../todo-form/todo-form';
+import { catchError, finalize, map, throwError } from 'rxjs';
 
 @Service() // yeni kullanım normalde @Injection({provideIn: 'root'})
 export class TodoService {
@@ -14,10 +14,14 @@ export class TodoService {
     private _list = signal<Todo[]>([]); // VERİ BURADA, Todo[] = listenin içinde todo objeleri olacak, []=başlangıçta liste yok
     private _filter = signal<'all' | 'active' | 'completed'>('all'); // _filter STATE
     private _editingTodo = signal<Todo| null>(null); // edit STATE
+    private _loading = signal(false);
+    private _error = signal(false);
 
     readonly list = this._list.asReadonly();
     readonly filter = this._filter.asReadonly();
     readonly editingTodo = this._editingTodo.asReadonly();
+    readonly loading = this._loading.asReadonly();
+    readonly error = this._error.asReadonly();
 
     constructor(){
         const todos = this.localStorageService.load("todos");
@@ -37,20 +41,97 @@ export class TodoService {
     }
 
     getTodos(){
+        this._loading.set(true);
         this.httpClient.get<Todo[]>("http://localhost:3000/todos")
+
+        .pipe(
+            map((todos)=>{return todos;}), // kısa hali map((todos)=> todos) bir de verilerimiz zaten dönüştürülerek geliyor o nedenle map in projede yeri olmayacak
+            catchError((error)=>{
+                this._error.set(true);
+                console.log(error);
+                return throwError(()=>error);
+            }),
+            finalize(()=>{
+                this._loading.set(false);
+            })
+        )
+
         .subscribe((todos)=>{
             this._list.set(todos);
+            this._error.set(false);
         });
     }
 
     postTodos(data: TodoFormData){
+        this._loading.set(true);
         this.httpClient.post<Todo>("http://localhost:3000/todos",data)
+
+        .pipe(
+            map((todo)=>{return todo;}),
+            catchError((error)=>{
+                this._error.set(true);
+                console.log(error);
+                return throwError(()=>error);
+            }),
+            finalize(()=>{
+                this._loading.set(false);
+            })
+        )
+
         .subscribe((todo)=>{
             this._list.set([
                 ...this._list(),
                 todo
             ]);
+            this._error.set(false);
         });
+    }
+
+    patchTodos(todo: Todo){
+        this._loading.set(true);
+        this.httpClient.patch<Todo>("http://localhost:3000/todos/id",todo)
+
+        .pipe(
+            map((todo)=>{return todo;}),
+            catchError((error)=>{
+                this._error.set(true);
+                console.log(error)
+                return throwError(()=>error);
+            }),
+            finalize(()=>{
+                this._loading.set(false);
+            })
+        )
+        .subscribe((todo)=>{
+            this._list.set(
+                this._list().map((item)=>{
+                    return item.id === todo.id ? todo:item; //? eşitse değilse olayı yani uzun kodun kısaltması
+                })
+            );
+            this._error.set(false);
+        })
+    }
+
+    deleteTodos(id: number){
+        this._loading.set(true);
+        this.httpClient.delete(`http://localhost:3000/todos/${id}`) //template literal olan backtick ``, <> ihtiyaç yok
+
+        .pipe(
+            catchError((error)=>{
+                this._error.set(true);
+                console.log(error);
+                return throwError(()=>error);
+            }),
+            finalize(()=>{
+                this._loading.set(false);
+            })
+        )
+        .subscribe(()=>{
+            this._list.set(
+                this._list().filter(todo => todo.id !==id)
+            )
+            this._error.set(false);
+        })
     }
 
     getTodoById(id:number): Todo|undefined{
