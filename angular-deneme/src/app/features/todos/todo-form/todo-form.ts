@@ -67,6 +67,7 @@ export class TodoForm implements OnInit, OnChanges{
   onSubmit(){
     
     if(this.todoForm.invalid){
+      this.todoForm.markAllAsTouched();
       return;
     }
 

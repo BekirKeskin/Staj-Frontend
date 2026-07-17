@@ -1,0 +1,33 @@
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+    <input type="email" formControlName="email" placeholder="email">
+    <p class="message">
+        @if(loginForm.controls.email.invalid && loginForm.controls.email.touched){
+            @if(loginForm.controls.email.errors?.['required']){email required}
+            @if(loginForm.controls.email.errors?.['email']){type is email}
+        }
+    </p>
+
+    <input type="password" formControlName="password" placeholder="password">
+    <p class="message">
+        @if(loginForm.controls.password.invalid && loginForm.controls.password.touched){
+            @if(loginForm.controls.password.errors?.['required']){password required}
+            @if(loginForm.controls.password.errors?.['minlength']){at least 6 characthers}
+        }
+    </p>
+
+    <button type="submit" [disabled]="authStore.loading()">
+        @if(authStore.loading()){
+            Giriş Yapılıyor...
+        } @else {
+            Giriş
+        }
+    </button>
+
+    @if(authStore.error()){
+        <p class="message">
+            {{authStore.error()}}
+        </p>
+    }
+
+</form>
