@@ -1,8 +1,11 @@
 <div class="todos-page">
   
   <section class="form-section">
-    <app-todo-form [editingTodo]="todoStore.editingTodo()" (todoAdded)="addTodo($event)" (todoUpdated)="updateTodo($event)" >
-      
+    <app-todo-form 
+      [editingTodo]="todoStore.editingTodo()" 
+      (todoAdded)="addTodo($event)" 
+      (todoUpdated)="updateTodo($event)" 
+      [loading]="todoService.loading()">
     </app-todo-form>
   </section>
 

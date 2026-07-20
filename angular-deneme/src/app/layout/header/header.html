@@ -7,6 +7,13 @@
         </p>
     </div>
     <div class="right">
+
+        @if(authStore.user();as user){
+            <span>
+                Hoşgeldin, {{user.name}}
+            </span>
+        }
+
         <button (click)="themeToggle()">
             @if (isDark){
                 ☀
@@ -15,8 +22,12 @@
             }
         </button>
 
-        <button (click)="logout()">
-            Çıkış
-        </button>
+        <app-button
+            type="button"
+            text="Çıkış"
+            variant="danger"
+            (clicked)="logout()">
+        </app-button>
+
     </div>
 </div>

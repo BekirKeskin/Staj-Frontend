@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Input, Output, ElementRef, ViewChild } from '@angular/core';
 import { Todo } from '../models/todo-model';
+import { Button } from '../../../shared/components/button/button';
 
 @Component({
   selector: 'app-todo-item',
   standalone: true,
-  imports: [],
+  imports: [Button],
   templateUrl: './todo-item.html',
   styleUrl: './todo-item.scss',
 })

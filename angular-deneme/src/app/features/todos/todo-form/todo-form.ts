@@ -1,12 +1,13 @@
 import { Component, OnInit, Output, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Todo, TodoFormData } from '../models/todo-model';
+import { Button } from '../../../shared/components/button/button';
 
 
 @Component({
   selector: 'app-todo-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, Button],
   templateUrl: './todo-form.html',
   styleUrl: './todo-form.scss',
 })
@@ -16,6 +17,8 @@ export class TodoForm implements OnInit, OnChanges{
 
   @Input()
   editingTodo: Todo | null = null;
+
+  @Input() loading = false;
 
   @Output()
   todoAdded = new EventEmitter<TodoFormData>();

@@ -1,8 +1,22 @@
 <li>
     <input type="checkbox" (change)="checkClick(todo.id)" [checked]="todo.done">    
 
-        <span [class.completed]="todo.done">{{ todo.title }}</span>
-        <button (click)="editClick()">Düzenle</button>
-        <button (click)="deleteClick(todo.id)">Sil</button>
-
+        <div>
+            <span [class.completed]="todo.done">{{ todo.title }}</span>
+        </div>    
+        
+        <div>
+            <span>{{ todo.description }}</span>
+        </div>
+        
+        <div>
+            <span>{{ todo.priority }}</span>
+            <span>{{ todo.category }}</span>
+            <span>{{ todo.dueDate }}</span>
+        </div>
+        
+        <div>
+            <app-button (clicked)="editClick()" variant="secondary" text="Düzenle"></app-button>
+            <app-button (clicked)="deleteClick(todo.id)" variant="danger" text="Sil"></app-button>
+        </div>
 </li>

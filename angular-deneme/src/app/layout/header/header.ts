@@ -1,17 +1,18 @@
-import { Component,inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AuthStore } from '../../features/auth/store/auth-store';
+import { Button } from '../../shared/components/button/button';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [],
+  imports: [Button],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
 
 export class Header {
 
-  private readonly authStore = inject(AuthStore); 
+  readonly authStore = inject(AuthStore); 
 
   isDark = false;
 

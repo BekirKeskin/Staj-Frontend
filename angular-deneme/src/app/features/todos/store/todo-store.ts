@@ -1,11 +1,15 @@
 import { Service, signal, computed, inject, effect } from "@angular/core";
 import { Todo, TodoFormData } from "../models/todo-model";
 import { LocalStorageService } from "../services/local-storage";
+import { ToastService } from "../../../core/services/toast";
 
 @Service()
 export class TodoStore {
-
+    toastService = inject(ToastService)
     localStorageService = inject(LocalStorageService)
+
+    private _loading = signal(false);
+    readonly loading = this._loading.asReadonly();
 
     // STATELER 
 
@@ -67,6 +71,9 @@ export class TodoStore {
     }
 
     addTodo(data: TodoFormData){
+
+        this._loading.set(true);
+
         const newTodo: Todo={
             id: Date.now(),
             title: data.title!,
@@ -77,6 +84,8 @@ export class TodoStore {
             done: false
         };
         this._list.set([...this._list(), newTodo]);
+        this.toastService.show("Todo eklendi","success");
+        this._loading.set(false);
     }
 
     updateTodo(updatedTodo: Todo){

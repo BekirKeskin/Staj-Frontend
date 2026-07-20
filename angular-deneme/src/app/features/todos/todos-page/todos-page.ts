@@ -22,7 +22,7 @@ export class TodosPage {
   }
   */
   todoStore = inject(TodoStore);
-  private todoService = inject(TodoService);
+  todoService = inject(TodoService);
   private activatedRoute = inject(ActivatedRoute);
 
   ngOnInit(){

@@ -23,6 +23,7 @@
     <option value="Medium">Medium</option>
     <option value="High">High</option>
   </select>
+
   <p class="message">
     @if(todoForm.controls.priority.invalid && todoForm.controls.priority.touched){
       @if(todoForm.controls.priority.errors?.['required']){select priority}
@@ -51,5 +52,11 @@
     }
   </p>
 
-  <button type="submit">Ekle</button>
+  <app-button 
+    text="Ekle"
+    variant="primary"
+    type="submit"
+    [disabled]="loading">
+  </app-button>
+
 </form>

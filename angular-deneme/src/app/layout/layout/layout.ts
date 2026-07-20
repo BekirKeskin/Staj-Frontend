@@ -3,6 +3,7 @@ import { Header } from '../header/header'
 import { Sidebar } from '../sidebar/sidebar';
 import { RouterOutlet, Router } from '@angular/router';
 import { AuthStore } from '../../features/auth/store/auth-store';
+import { Toast } from '../../shared/components/toast/toast';
 
 
 
@@ -11,7 +12,7 @@ import { AuthStore } from '../../features/auth/store/auth-store';
   standalone: true,
   templateUrl: './layout.html',
   styleUrl: './layout.scss',
-  imports: [Header, Sidebar, RouterOutlet]
+  imports: [Header, Sidebar, RouterOutlet, Toast]
 })
 export class Layout {
 
