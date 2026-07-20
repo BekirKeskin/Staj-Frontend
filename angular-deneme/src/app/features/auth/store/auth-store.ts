@@ -1,4 +1,4 @@
-import { Service, signal, effect, inject } from "@angular/core";
+import { Service, signal, effect, inject, computed } from "@angular/core";
 import { User } from "../models/user";
 import { LocalStorageService } from "../../todos/services/local-storage";
 import { AuthState } from "../models/auth-state";
@@ -19,13 +19,13 @@ export class AuthStore{
     readonly token = this._token.asReadonly();
     readonly loading = this._loading.asReadonly();
     readonly error = this._error.asReadonly();
+    readonly isAuthenticated = computed(() => !!this._token());
 
     constructor(){
         const auth = this.localStorageService.load<AuthState>("auth")
         // 3 yerde aynı veri yapısını kullandığım için AuthState oluşturdum !!!
-        if(auth){
-           this._user.set(auth.user); // bunlar yerine restore session konulabilirmiş böylece
-           this._token.set(auth.token); // doğrudan değiştirmek yerine storeun actionunu kullanırmış
+        if(auth?.user && auth.token){
+            this.restoreSession(auth.user, auth.token);// store actionunu kullanmak için restore session kullandım
         }
 
         effect(()=> {

@@ -1,5 +1,4 @@
 import { Service, inject } from '@angular/core';
-import { AuthStore } from "../store/auth-store";
 import { User } from "../models/user";
 import { LoginRequest } from '../models/login-request';
 
@@ -9,7 +8,6 @@ type FakeUser = User & {
 
 @Service()
 export class AuthService {
-    private authStore = inject(AuthStore);
 
     private users: FakeUser[] = [
         {
@@ -26,35 +24,41 @@ export class AuthService {
         }
     ];
 
-    login(data: LoginRequest): boolean {
-        this.authStore.setLoading(true);
+    login(data: LoginRequest): string | null {
+
         const user = this.users.find(user=> user.email === data.email);
+
         if(!user){
-            this.authStore.setError("kullanıcı bulunamadı");
-            this.authStore.setLoading(false);
-            return false;
-        }if(user.password !== data.password){
-            this.authStore.setError("hatalı şifre");
-            this.authStore.setLoading(false);
-            return false;
+            return null;
         }
-        const currentUser = {
+        if(user.password !== data.password){
+            return null;
+        }
+        return this.generateToken(user.id);
+    }
+
+    private generateToken(userId: number):string {
+        return `fake-token-${userId}`;
+    }
+
+    getMe(token: string ): User | null {
+
+        const userId = Number(
+            token.replace("fake-token-", "")
+        );
+
+        const user = this.users.find(
+            user => user.id === userId
+        );
+
+        if(!user){
+            return null;
+        }
+        
+        return{
             id: user.id,
             name: user.name,
             email: user.email
-        }
-        const token = this.generateToken();
-        this.authStore.setError(null);
-        this.authStore.login(currentUser,token);
-        this.authStore.setLoading(false);
-        return true;
-    }
-
-    logout() {
-        this.authStore.logout();
-    }
-
-    private generateToken():string {
-        return "fake-token";
+        };
     }
 }

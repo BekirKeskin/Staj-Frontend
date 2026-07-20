@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component,inject } from '@angular/core';
+import { AuthStore } from '../../features/auth/store/auth-store';
 
 @Component({
   selector: 'app-header',
@@ -10,7 +11,13 @@ import { Component } from '@angular/core';
 
 export class Header {
 
+  private readonly authStore = inject(AuthStore); 
+
   isDark = false;
+
+  logout(){
+    this.authStore.logout();
+  }
   
   themeToggle(){
     this.isDark = !this.isDark;
@@ -22,4 +29,5 @@ export class Header {
       body?.classList.remove("dark");
     }
   }
+
 }

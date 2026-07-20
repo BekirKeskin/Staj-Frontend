@@ -32,15 +32,34 @@ export class Login {
 
   onSubmit(){
     
+    this.authStore.setLoading(true);
+
     if(this.loginForm.invalid){
       this.loginForm.markAllAsTouched();
+      this.authStore.setLoading(false);
       return;
     }
 
     const data = this.loginForm.getRawValue() as LoginRequest; // getRawValue formdaki bütün alanları döndürür. tipleri düzgün gelir
-    const success = this.authService.login(data);
-    if(success){
-      this.router.navigate(["/anasayfa"]);
+
+    const token = this.authService.login(data);
+
+    if(!token){
+      this.authStore.setError("Email veya şifre yanlış");
+      this.authStore.setLoading(false);
+      return;
     }
+
+    const user = this.authService.getMe(token);
+
+    if(!user){
+      this.authStore.setError("Kullanıcı bulunamadı.");
+      this.authStore.setLoading(false);
+      return;
+    }
+
+    this.authStore.login(user,  token);
+    this.router.navigate(["/anasayfa"]);
+  
   }
 }
