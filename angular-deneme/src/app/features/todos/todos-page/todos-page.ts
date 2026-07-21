@@ -6,11 +6,12 @@ import { TodoService } from '../services/todo';
 import { ActivatedRoute } from '@angular/router';
 import { TodoStore } from '../store/todo-store';
 import { Modal } from '../../../shared/components/modal/modal';
+import { TodoStats } from '../todo-stats/todo-stats';
 
 @Component({
   selector: 'app-todos-page',
   standalone: true,
-  imports: [TodoForm,TodoList, Modal],
+  imports: [TodoForm,TodoList, Modal, TodoStats],
   templateUrl: './todos-page.html',
   styleUrl: './todos-page.scss',
 })

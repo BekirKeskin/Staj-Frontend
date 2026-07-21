@@ -53,6 +53,18 @@ export class TodoStore {
         return this._list();
     });
 
+    totalCount = computed(()=>{
+        return this._list().length;
+    })
+
+    completedCount = computed(()=>{
+        return this._list().filter(todo => todo.done).length;
+    })
+    
+    activeCount = computed(()=>{
+        return this._list().filter(todo => !todo.done).length;
+    })
+
     // ACTIONS
     
     // query actions

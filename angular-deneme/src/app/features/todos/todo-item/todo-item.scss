@@ -1,3 +1,48 @@
+.todo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 16px;
+    margin-bottom: 12px;
+    
+    border: 1px solid #ddd;
+    border-radius: 8px; 
+}
+
+.todo-main {
+    flex: 1;
+}
+
+.todo-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.todo-info {
+    margin-left: 28px;
+    margin-top: 8px;
+}
+
+.todo-info p {
+    margin: 0 0 8px 0;
+}
+
+.todo-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 14px;
+}
+
+.todo-actions {
+    display: flex;
+    gap: 8px;
+}
+
 .completed{
     text-decoration: line-through;
 }
