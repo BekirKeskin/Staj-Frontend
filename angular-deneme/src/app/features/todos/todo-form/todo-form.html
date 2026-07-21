@@ -1,4 +1,5 @@
 <form [formGroup]="todoForm" (ngSubmit)="onSubmit()">
+  
   <input formControlName="title" placeholder="Todo başlığı">
   <p class="message"> 
     @if(todoForm.controls.title.invalid && todoForm.controls.title.touched){

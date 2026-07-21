@@ -5,11 +5,12 @@ import { Todo, TodoFormData } from '../models/todo-model';
 import { TodoService } from '../services/todo';
 import { ActivatedRoute } from '@angular/router';
 import { TodoStore } from '../store/todo-store';
+import { Modal } from '../../../shared/components/modal/modal';
 
 @Component({
   selector: 'app-todos-page',
   standalone: true,
-  imports: [TodoForm,TodoList],
+  imports: [TodoForm,TodoList, Modal],
   templateUrl: './todos-page.html',
   styleUrl: './todos-page.scss',
 })
@@ -24,6 +25,12 @@ export class TodosPage {
   todoStore = inject(TodoStore);
   todoService = inject(TodoService);
   private activatedRoute = inject(ActivatedRoute);
+
+  private _deleteTodo = signal<Todo | null>(null);
+  private _modalVisible = signal<boolean>(false);
+
+  readonly deletedTodo = this._deleteTodo.asReadonly();
+  readonly modalVisible = this._modalVisible.asReadonly();
 
   ngOnInit(){
     this.activatedRoute.queryParams.subscribe((queryParams) => {
@@ -55,7 +62,11 @@ export class TodosPage {
   }
 
   deleteTodo(id:number){
-    this.todoStore.deleteTodo(id);
+    const todo = this.todoStore.getTodoById(id);
+    if(todo){
+      this._deleteTodo.set(todo);
+      this._modalVisible.set(true);
+    }
   }
 
   editTodo(todo:Todo){ 
@@ -65,4 +76,19 @@ export class TodosPage {
   updateTodo(updatedTodo: Todo){
     this.todoStore.updateTodo(updatedTodo);
   }
+
+  closeModal(){
+    this._modalVisible.set(false);
+    this._deleteTodo.set(null);
+  }
+
+  confirmDelete(){
+    const todo = this._deleteTodo();
+
+    if(todo){
+      this.todoStore.deleteTodo(todo.id);
+    }
+
+    this.closeModal();
+    }
 }

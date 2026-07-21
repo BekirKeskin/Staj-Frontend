@@ -89,6 +89,8 @@ export class TodoStore {
     }
 
     updateTodo(updatedTodo: Todo){
+        this._loading.set(true);
+
         this._list.set(
             this._list().map(todo => {
                 if (todo.id === updatedTodo.id) {
@@ -98,6 +100,8 @@ export class TodoStore {
             })
         );
         this._editingTodo.set(null);
+        this.toastService.show("Todo güncellendi","success");
+        this._loading.set(false);
     }
 
     toggleTodo(id:number){
@@ -112,9 +116,13 @@ export class TodoStore {
     }
 
     deleteTodo(id: number){
+        this._loading.set(true);
+
         this._list.set(
             this._list().filter(todo => todo.id !== id)
         );
+        this.toastService.show("Todo silindi","error");
+        this._loading.set(false);
     }
 
     // UI actions

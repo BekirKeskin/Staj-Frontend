@@ -23,4 +23,13 @@
     </app-todo-list> 
   </section>
 
+  <app-modal 
+    [visible]="modalVisible()"
+    message="Todo silinsin mi?"
+    (cancelled)="closeModal()"
+    (confirmed)="confirmDelete()"
+  >
+
+  </app-modal>
+
 </div>
