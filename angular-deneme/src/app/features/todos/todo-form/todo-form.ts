@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { Todo, TodoFormData } from '../models/todo-model';
+import { Todo, TodoFormData, Priority, Category } from '../models/todo-model';
 import { Button } from '../../../shared/components/button/button';
 
 
@@ -38,14 +38,14 @@ export class TodoForm implements OnInit, OnChanges{
       Validators.required,
       Validators.minLength(1)
     ]),
-    priority: new FormControl('',[
+    priority: new FormControl<Priority | null>(null,[
       Validators.required
     ]),
     dueDate: new FormControl('',[
       Validators.required,
       this.noPastDateValidator
     ]),
-    category: new FormControl('',[
+    category: new FormControl<Category | null>(null,[
       Validators.required,
     ])
   });

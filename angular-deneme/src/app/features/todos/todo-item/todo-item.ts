@@ -1,11 +1,13 @@
 import { Component, EventEmitter, Input, Output, ElementRef, ViewChild } from '@angular/core';
 import { Todo } from '../models/todo-model';
 import { Button } from '../../../shared/components/button/button';
+import { Badge } from '../../../shared/components/badge/badge';
+import { Priority } from '../models/todo-model';
 
 @Component({
   selector: 'app-todo-item',
   standalone: true,
-  imports: [Button],
+  imports: [Button, Badge],
   templateUrl: './todo-item.html',
   styleUrl: './todo-item.scss',
 })
@@ -36,5 +38,23 @@ export class TodoItem {
 
   deleteClick(id:number){
     this.todoDeleted.emit({ id });
+  }
+
+  getPriorityVariant(priority: Priority): 'primary' | 'secondary' | 'success' | 'warning' | 'danger'{
+
+    switch(priority){
+
+      case 'High':
+        return 'danger';
+
+      case 'Medium':
+        return 'warning';  
+      
+      case 'Low':
+        return 'success';
+
+      default:
+        return 'primary';
+    }
   }
 }

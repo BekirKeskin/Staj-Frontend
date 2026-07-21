@@ -15,7 +15,7 @@
 
             <div class="todo-meta">
 
-                <span>{{ todo.priority }}</span>
+                <app-badge [text]="todo.priority" [variant]="getPriorityVariant(todo.priority)"></app-badge>
                 <span>{{ todo.category }}</span>
                 <span>{{ todo.dueDate }}</span>
             
