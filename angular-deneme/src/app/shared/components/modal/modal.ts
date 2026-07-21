@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, input } from '@angular/core';
 
 @Component({
   selector: 'app-modal',
@@ -9,7 +9,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class Modal {
 
-  @Input() visible = false;
+  visible = input<boolean>(false); // yeni kullanımdır   eski kullanım= @Input() visible = false;
   @Input() message = '';
 
   @Output() confirmed = new EventEmitter<void>();
